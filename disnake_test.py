@@ -115,19 +115,16 @@ async def __eval(ctx, *, arg):
     }
     start = time.time()
     try:
-        bot.logger.info(f'Invoked command "eval"')
         r = await aeval.aeval(f"""{code}""", standart_args, {})#aioconsole.aexec(f"""{code}""", standart_args)
         ended = time.time() - start
         print(r)
         if not code.startswith('#nooutput'):
             await ctx.send(embed = disnake.Embed(title = "Успешно!", description = f"Выполнено за: {ended}", color = 0x99ff99).add_field(name = f'Входные данные:', value = f'`{minify_text(code)}`').add_field(name = f'Выходные данные:', value = f'`{minify_text(r)}`', inline=False))
-        bot.logger.success(f'Command "eval" executed in {ended}')
     except Exception as e:
         ended = time.time() - start
         # await ctx.send(embed = discord.Embed(title = f"При выполнении возникла ошибка. Время: {ended}", description = f'Ошибка:\n```py\n{"".join(format_exception(e, e, e.__traceback__))}```', color = 0xff000))
         if not code.startswith('#nooutput'):
             await ctx.send(embed = disnake.Embed(title = f"При выполнении возникла ошибка.\nВремя: {ended}", description = f'Ошибка:\n```py\n{e}```', color = 0xff0000).add_field(name = f'Входные данные:', value = f'`{minify_text(code)}`', inline=False))
-        bot.logger.error(f'Command "eval" execution failed in {ended}:\n\t\tPython error: {e}')
         raise e
 
 bot.run(json_data["token"])
