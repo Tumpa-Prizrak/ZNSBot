@@ -92,7 +92,7 @@ async def restart(ctx, timerout: int = None):
         await ctx.send("Нет! Тебе нельзя меня перезагрузить!")
 @bot.command(aliases = ['eval', 'aeval', 'evaulate', 'выполнить', 'exec', 'execute'])
 async def __eval(ctx, *, arg):
-    if ctx.author.id not in bot.creators: return await ctx.send("Кыш!")
+    if ctx.author.id not in creators: return await ctx.send("Кыш!")
     code = await clean_code(arg)
     standart_args = {
         "disnake": disnake,
