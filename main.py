@@ -55,7 +55,7 @@ async def __eval(ctx, *, arg):
     }
     start = time.time()
     try:
-        r = await aeval.aeval(f"""{code}""", {}, standart_args)#aioconsole.aexec(f"""{code}""", standart_args)
+        r = await aeval.aeval(f"""{code}""", standart_args, {})#aioconsole.aexec(f"""{code}""", standart_args)
         ended = time.time() - start
         print(r)
         if not code.startswith('#nooutput'):
