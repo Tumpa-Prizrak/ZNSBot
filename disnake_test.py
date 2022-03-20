@@ -32,7 +32,10 @@ async def idea(interaction):
             )
         async def callback(selfi, interaction:disnake.ModalInteraction) -> None:
             await interaction.response.send_message(embed=disnake.Embed(title="Спасибо за Вашу идею!", description=interaction.text_values["idea_content"]))
-            await bot.get_channel(954016631430991942).send(embed=disnake.Embed(title=f"Идея от {interaction.author} ({interaction.author.id})", description=interaction.text_values["idea_content"]))
+            msg = await bot.get_channel(954016631430991942).send(embed=disnake.Embed(title=f"Идея от {interaction.author} ({interaction.author.id})", description=interaction.text_values["idea_content"]))
+            await msg.create_thread(name = "Обсуждение")
+            await msg.add_reaction("👍")
+            await msg.add_reaction("👎")
 
         async def on_error(selfi, error, inter) -> None:
             await inter.response.send_message("Упс... Что-то пошло не так...", ephemeral=True)
