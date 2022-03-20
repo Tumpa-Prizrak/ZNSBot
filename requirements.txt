@@ -20,5 +20,4 @@ PyScreeze==0.1.28
 pytweening==1.0.4
 requests==2.27.1
 setuptools==58.1.0
-urllib==31.26.9
 yarl==1.7.2
