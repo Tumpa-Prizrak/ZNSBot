@@ -21,3 +21,4 @@ pytweening==1.0.4
 requests==2.27.1
 setuptools==58.1.0
 yarl==1.7.2
+blusutils # моя либа для всяких штук (https://github.com/Blusutils/blusutilspy)
