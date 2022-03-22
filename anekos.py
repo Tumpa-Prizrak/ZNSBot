@@ -1,8 +1,8 @@
 """Async NekosAPI interactor
 """
-import aiohttp
+import aiohttp, asyncio
 import ujson
-from blusutils.collections import deep_merge
+# from blusutils.collections import deep_merge
 
 possible = [
     'feet', 'yuri', 'trap', 'futanari', 'hololewd', 'lewdkemo',
@@ -45,20 +45,24 @@ class InvalidArgument(NekoException):
 class NekosAsyncAPI:
     def __init__(self, base_url, **kwargs):
         self.base_url = base_url
-        self.session = aiohttp.ClientSession()
-        for arg in kwargs:
-            if isinstance(kwargs[arg], dict):
-                kwargs[arg] = deep_merge(getattr(self.session, arg), kwargs[arg])
-            setattr(self.session, arg, kwargs[arg])
+        # for arg in kwargs:
+        #     if isinstance(kwargs[arg], dict):
+        #         kwargs[arg] = deep_merge(getattr(self.session, arg), kwargs[arg])
+        #     setattr(self.session, arg, kwargs[arg])
 
     async def get(self, url, **kwargs):
-        async with self.session.get(self.base_url+url, **kwargs) as resp: return resp
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.base_url+url, **kwargs) as resp:
+                return resp
 
     async def post(self, url, **kwargs):
-        async with self.session.post(self.base_url+url, **kwargs) as resp: return resp
+        async with aiohttp.ClientSession() as session:
+            async with session.post(self.base_url+url, **kwargs) as resp:
+                return resp
 
     async def get_as_json(self, url, **kwargs):
-        return ujson.loads((await self.get(url, **kwargs)).text)
+        r = await self.get(url, **kwargs)
+        return await r.json() # похуй на южсон, когда пофиксим - верну
 
 
 
@@ -89,6 +93,7 @@ async def img(target: str) -> str:
         else:
             r = await napi.get_as_json("/img/" + target.lower())
     except Exception as e:
-        raise NothingFound("Couldn't contact the API right now...")
+        raise
+        # raise NothingFound("Couldn't contact the API right now...")
 
     return r["url"]

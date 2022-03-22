@@ -1,4 +1,4 @@
-import nextcord, json, aeval, asyncio, aiohttp, os, sys, time, datetime, random, requests, pyautogui, platform, anekos, blusutils
+import nextcord, json, aeval, asyncio, aiohttp, os, sys, time, datetime, random, requests, pyautogui, platform, anekos, blusutils, nekos
 from nextcord.ext import commands
 
 json_data = json.load(open("settings.json", "r"))
@@ -35,13 +35,13 @@ async def idea(interaction: nextcord.Interaction, idea_text: str = nextcord.Slas
 
 # блэклист категорий будет позже, а пока будете смотреть на футанари и трапов :)
 @bot.slash_command(name="nekos", description="Получает картинку из Nekos (18+ допустимо только в NSFW-каналах)")
-async def nekos(interaction: nextcord.Interaction, category: str = nextcord.SlashOption(name = "text", description = "Категория картинки", required=False, choices=anekos.everywhere)):
+async def nekos_(interaction: nextcord.Interaction, category: str = nextcord.SlashOption(name = "text", description = "Категория картинки", required=False, choices=anekos.everywhere)):
     if category:
         if category in anekos.nsfw and not interaction.channel.is_nsfw():
             return await interaction.send("Вы не можете воспользоваться командой с NSFW-категорией вне NSFW-канала")
-        img = await anekos.img(category)
+        img = nekos.img(category)
     else:
-        img = await anekos.img(random.choice(anekos.nsfw if interaction.channel.is_nsfw() else anekos.everywhere))
+        img = nekos.img(random.choice(anekos.nsfw if interaction.channel.is_nsfw() else anekos.everywhere))
     await interaction.send(embed = nextcord.Embed(title = f'Nekos {category.capitalize()}', url = img).set_image(url = img))
 
             
