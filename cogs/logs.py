@@ -43,7 +43,7 @@ class Logs(commands.Cog):
         emb.add_field(name = f'Содержимое до:', value = f"`{self.bot.minify_text(before.content)}`", inline = False)#Вложения: `{attach}`", inline = False)
         emb.add_field(name = f'Содержимое после:', value = f" `{self.bot.minify_text(after.content)}`", inline=False)#f"Вложения: `{attach}`", inline = False)
         emb.add_field(name = "Автор сообщения:", value = f"{before.author.mention}", inline = False)
-        emb.set_author(name = f'{before.author.display_name} || {before.author}', icon_url = before.author.avatar.url)
+        emb.set_author(name = f'{before.author.display_name} || {before.author}', icon_url = before.author.avatar.url if before.author.avatar else before.author.default_avatar)
         emb.set_footer(text = f'ID: {before.id}')
 
         self.logchannel = self.bot.get_channel(955864566758264842)
@@ -78,7 +78,7 @@ class Logs(commands.Cog):
         emb.add_field(name = "Автор сообщения:", value = f"{message.author.mention}", inline = False)
         if del_by_who is not None:
             emb.add_field(name = 'Удалено:', value = f'{del_by_who.mention}')
-        emb.set_author(name = f'{message.author.display_name} || {message.author}', icon_url = message.author.avatar.url)
+        emb.set_author(name = f'{message.author.display_name} || {message.author}', icon_url = message.author.avatar.url if message.author.avatar else message.author.default_avatar)
         emb.set_footer(text = f'ID: {message.id}')
 
         self.logchannel = self.bot.get_channel(955864566758264842)
@@ -226,7 +226,7 @@ class Logs(commands.Cog):
             elif isinstance(activ.type, nextcord.ActivityType.custom):
                 act = f'Статус: {str(activ.emoji) if activ.emoji else ""}{activ.name}'
             emb.add_field(name = f'{act}', value = "** **", inline = False)
-        emb.set_thumbnail(url = member.avatar.url)
+        emb.set_thumbnail(url = member.avatar.url if member.avatar else member.default_avatar)
 
         self.logchannel = self.bot.get_channel(955864566758264842)
         await self.logchannel.send(embed = emb)
@@ -241,7 +241,7 @@ class Logs(commands.Cog):
         emb.add_field(name = f'Бот: {"да" if member.bot else "нет"}', value = "** **", inline = False)
         emb.add_field(name = f'Дата создания аккаунта: {member.created_at}', value = f'** **', inline = False)
         emb.add_field(name = 'Роли:', value = '** **'.join([r.mention for r in member.roles]), inline = False)
-        emb.set_thumbnail(url = member.avatar.url)
+        emb.set_thumbnail(url = member.avatar.url if member.avatar else member.default_avatar)
 
         self.logchannel = self.bot.get_channel(955864566758264842)
         await self.logchannel.send(embed = emb)
@@ -252,7 +252,7 @@ class Logs(commands.Cog):
                 title = "Пользователь забанен",
                 description = f"Забаненый: {user}",
                 color = 0xff0000
-            ).set_thumbnail(url = user.avatar.url)
+            ).set_thumbnail(url = user.avatar.url if user.avatar else user.default_avatar)
 
         self.logchannel = self.bot.get_channel(955864566758264842)
         await self.logchannel.send(embed = emb)
@@ -263,7 +263,7 @@ class Logs(commands.Cog):
                 title = "Пользователь рзбанен",
                 description = f"Разбаненый: {user}",
                 color = 0x00ff00
-            ).set_thumbnail(url = user.avatar.url)
+            ).set_thumbnail(url = user.avatar.url if user.avatar else user.default_avatar)
         
         self.logchannel = self.bot.get_channel(955864566758264842)
         await self.logchannel.send(embed = emb)
@@ -287,7 +287,7 @@ class Logs(commands.Cog):
             emb.title = "Участник изменён"
             emb.add_field(name = f'Никнейм участника изменён на: {after.display_name}', value = f"Старый никнейм: {before.display_name}")
         if emb.title == "** **": return
-        emb.set_thumbnail(url = after.avatar.url)
+        emb.set_thumbnail(url = after.avatar.url if after.avatar else after.default_avatar)
         emb.add_field(name = 'Debug: активность (баг с мобильным Rich Presence)', value = f'`{before.activity}`\n`{after.activity}`\n`{before.status}`\n`{after.status}`')
         
         self.logchannel = self.bot.get_channel(955864566758264842)
@@ -304,7 +304,7 @@ class Logs(commands.Cog):
                 emb.add_field(name = 'Изменён тег пользователя', value = f'До: {before.discriminator}\nПосле: {after.discriminator}', inline = False)
             if before.avatar != after.avatar:
                 emb.add_field(name = 'Изменён аватар пользователя', value = f'До: {before.avatar.url}\nПосле: {after.avatar.url}', inline = False)
-            emb.set_thumbnail(url = after.avatar.url)
+            emb.set_thumbnail(url = after.avatar.url if after.avatar else after.default_avatar)
             # emb.add_field(name = 'Debug: активность (баг с мобильным Rich Presence)', value = f'`{before.activity}`\n`{after.activity}`\n`{before.status}`\n`{after.status}`')
             self.logchannel = self.bot.get_channel(955864566758264842)
         await self.logchannel.send(embed = emb)

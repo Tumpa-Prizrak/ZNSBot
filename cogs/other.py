@@ -9,7 +9,7 @@ class Other(commands.Cog):
     async def avatar(self, interaction: nextcord.Interaction, member: nextcord.Member = nextcord.SlashOption(name = "user", description = "Пользователь, чей аватар надо показать", required = False)):
         member = member if member else interaction.user
         emb = nextcord.Embed(title = f'Автар пользователя {member}:', color = member.accent_color or 0x000000)
-        emb.set_image(url = member.avatar.url)
+        emb.set_image(url = member.avatar.url if member.avatar else member.default_avatar)
         await interaction.send(embed = emb)
 
 
