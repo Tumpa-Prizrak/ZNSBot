@@ -39,9 +39,9 @@ async def nekos_(interaction: nextcord.Interaction, category: str = nextcord.Sla
     if category:
         if category in anekos.nsfw and not interaction.channel.is_nsfw():
             return await interaction.send("Вы не можете воспользоваться командой с NSFW-категорией вне NSFW-канала")
-        img = nekos.img(category)
     else:
-        img = nekos.img(random.choice(anekos.nsfw if interaction.channel.is_nsfw() else anekos.everywhere))
+        random.choice(anekos.nsfw if interaction.channel.is_nsfw() else anekos.everywhere)
+    img = nekos.img(category)
     await interaction.send(embed = nextcord.Embed(title = f'Nekos {category.capitalize()}', url = img).set_image(url = img))
 
             
