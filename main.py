@@ -35,7 +35,7 @@ async def idea(interaction: nextcord.Interaction, idea_text: str = nextcord.Slas
 
 # блэклист категорий будет позже, а пока будете смотреть на футанари и трапов :)
 @bot.slash_command(name="nekos", description="Получает картинку из Nekos (18+ допустимо только в NSFW-каналах)")
-async def nekos_(interaction: nextcord.Interaction, category: str = nextcord.SlashOption(name = "text", description = "Категория картинки", required=False, choices=anekos.everywhere)):
+async def nekos_(interaction: nextcord.Interaction, category: str = nextcord.SlashOption(name = "text", description = "Категория картинки", required=False)):
     if category is not None:
         if category not in anekos.possible:
             await interaction.send(f"Категории {category} не существует! Я отправлю список тебе в ЛС")
