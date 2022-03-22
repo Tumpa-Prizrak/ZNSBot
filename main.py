@@ -35,7 +35,7 @@ async def idea(interaction: nextcord.Interaction, idea_text: str = nextcord.Slas
 
 # блэклист категорий будет позже, а пока будете смотреть на футанари и трапов :)
 @bot.slash_command(name="nekos", description="Получает картинку из Nekos (18+ допустимо только в NSFW-каналах)")
-async def nekos_(interaction: nextcord.Interaction, category: str = nextcord.SlashOption(name = "text", description = "Категория картинки", required=False)):
+async def nekos_(interaction: nextcord.Interaction, category: str = nextcord.SlashOption(name = "category", description = "Категория картинки", required=False)):
     if category is not None:
         if category not in anekos.possible:
             await interaction.send(f"Категории `{category}` не существует! Я отправлю список тебе в ЛС")
@@ -47,7 +47,20 @@ async def nekos_(interaction: nextcord.Interaction, category: str = nextcord.Sla
     img = nekos.img(category)
     await interaction.send(embed = nextcord.Embed(title = f'Nekos {category.capitalize()}', url = img).set_image(url = img))
 
-            
+@bot.slash_command(name = "rule34", description = "Получает картинку из Rule34 (только в NSFW-каналах)")
+async def rule34(interaction: nextcord.Interaction, tag: str = nextcord.SlashOption(name='tag', description = "Тег, по которому нужно найти картинку", required = True)):
+    if not interaction.channel.is_nsfw(): return await interaction.send("Вы не можете воспользоваться командой вне NSFW-канала")
+    apibase = "https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&limit=1&tags={}&json=1"
+    # так как аиохттп умерла, сидим на реквестс
+    # async with aiohttp.ClientSession() as session:
+    #     async with session.get(apibase.format(tag)) as response:
+    #         if (await response.text()) == '':
+    #             return await interaction.send('По данному тегу ничего не нашлось :(')
+    #         r = (await response.json())[0]
+    response = requests.get(apibase.format(tag))
+    if response.text == '': return await interaction.send('По данному тегу ничего не нашлось :(')
+    r = response.json()[0] # TODO: ujson.loads
+    await interaction.send(embed = nextcord.Embed().set_footer(text=f"Теги: {minify_text(r.get('tags', 'нет'))}").set_image(url = r.get('file_url')))
 
 # @bot.command(aliases = ['eval', 'aeval', 'evaulate', 'выполнить', 'exec', 'execute'])
 # async def __eval(ctx, *, arg):
