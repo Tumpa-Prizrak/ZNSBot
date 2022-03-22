@@ -38,8 +38,8 @@ async def idea(interaction: nextcord.Interaction, idea_text: str = nextcord.Slas
 async def nekos_(interaction: nextcord.Interaction, category: str = nextcord.SlashOption(name = "text", description = "Категория картинки", required=False)):
     if category is not None:
         if category not in anekos.possible:
-            await interaction.send(f"Категории {category} не существует! Я отправлю список тебе в ЛС")
-            await interaction.message.author.send(embed = nextcord.Embed(name = "Категории Nekos", description = ", ".join(anekos.everywhere)+(", "+", ".join(anekos.nsfw) if interaction.channel.is_nsfw() else "")))
+            await interaction.send(f"Категории `{category}` не существует! Я отправлю список тебе в ЛС")
+            await interaction.user.send(embed = nextcord.Embed(name = "Категории Nekos", description = ", ".join(anekos.everywhere)+(", "+", ".join(anekos.nsfw) if interaction.channel.is_nsfw() else "")))
         if category in anekos.nsfw and not interaction.channel.is_nsfw():
             return await interaction.send("Вы не можете воспользоваться командой с NSFW-категорией вне NSFW-канала")
     else:
