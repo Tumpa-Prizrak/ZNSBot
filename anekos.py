@@ -16,7 +16,7 @@ possible = [
     'smallboobs', 'hug', 'ero', 'smug', 'goose', 'baka', 'woof'
 ]
 
-everywhere = ['tickle', 'waifu', 'baka', 'ngif', 'cuddle', 'avatar', 'holo', 'kiss', 'fox_girl', 'poke', 'goose', 'pat', 'slap', 'woof', 'wallpaper', 'hug']
+everywhere = ['tickle', 'waifu', 'baka', 'ngif', 'cuddle', 'avatar', 'holo', 'kiss', 'fox_girl', 'poke', 'goose', 'pat', 'slap', 'woof', 'wallpaper', 'hug', 'smug']
 
 nsfw = [
     'feet', 'yuri', 'trap', 'futanari', 'hololewd', 'lewdkemo',
@@ -26,11 +26,11 @@ nsfw = [
     'keta', 'blowjob', 'pussy', 'tits', 'holoero', 'lizard', 'pussy_jpg',
     'pwankg', 'classic', 'kuni', 'femdom',
     'neko', 'spank', 'erok', 'boobs', 'random_hentai_gif',
-    'smallboobs', 'ero', 'smug'
+    'smallboobs', 'ero'
 ]
 
 class NekoException(Exception):
-    """ Base exception class for anekos.py """
+    """Base exception class for anekos.py """
     pass
 class NothingFound(NekoException):
     """ The API didn't return anything """

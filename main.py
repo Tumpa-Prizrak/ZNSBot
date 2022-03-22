@@ -1,5 +1,6 @@
 import nextcord, json, aeval, asyncio, aiohttp, os, sys, time, datetime, random, requests, pyautogui, platform, anekos, blusutils, nekos
 from nextcord.ext import commands
+from urllib.parse import quote
 
 json_data = json.load(open("settings.json", "r"))
 bot = commands.Bot(command_prefix=json_data["prefix"], case_sensitive=True, strip_after_prefix=True, intents=nextcord.Intents.all())
@@ -52,7 +53,7 @@ async def rule34(interaction: nextcord.Interaction, tag: str = nextcord.SlashOpt
     if not interaction.channel.is_nsfw(): return await interaction.send("Вы не можете воспользоваться командой вне NSFW-канала")
     apibase = "https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&limit=20&tags={}&json=1"
     async with aiohttp.ClientSession() as session:
-        async with session.get(apibase.format(tag)) as response:
+        async with session.get(apibase.format(quote(tag))) as response:
             if (await response.text()) == '':
                 return await interaction.send('По данному тегу ничего не нашлось :(')
             r = random.choice((await response.json()))
