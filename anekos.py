@@ -45,17 +45,17 @@ class InvalidArgument(NekoException):
 class NekosAsyncAPI:
     def __init__(self, base_url, **kwargs):
         self.base_url = base_url
-        self.session = aiohttp.ClientSession(self.base_url)
+        self.session = aiohttp.ClientSession()
         for arg in kwargs:
             if isinstance(kwargs[arg], dict):
                 kwargs[arg] = deep_merge(getattr(self.session, arg), kwargs[arg])
             setattr(self.session, arg, kwargs[arg])
 
     async def get(self, url, **kwargs):
-        async with self.session.get("/"+url, **kwargs) as resp: return resp
+        async with self.session.get(self.base_url+url, **kwargs) as resp: return resp
 
     async def post(self, url, **kwargs):
-        async with self.session.post("/"+url, **kwargs) as resp: return resp
+        async with self.session.post(self.base_url+url, **kwargs) as resp: return resp
 
     async def get_as_json(self, url, **kwargs):
         return ujson.loads((await self.get(url, **kwargs)).text)

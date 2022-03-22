@@ -35,7 +35,7 @@ async def idea(interaction: nextcord.Interaction, idea_text: str = nextcord.Slas
 
 # блэклист категорий будет позже, а пока будете смотреть на футанари и трапов :)
 @bot.slash_command(name="nekos", description="Получает картинку из Nekos (18+ допустимо только в NSFW-каналах)")
-async def nekos(interaction: nextcord.Interaction, category: str = nextcord.SlashOption(name = "Категория", description = "Категория картинки", required=False, choices=anekos.possible)):
+async def nekos(interaction: nextcord.Interaction, category: str = nextcord.SlashOption(name = "Категория", description = "Категория картинки", required=False, choices=anekos.everywhere)):
     if category:
         if category in anekos.nsfw and not interaction.channel.is_nsfw():
             return await interaction.send("Вы не можете воспользоваться командой с NSFW-категорией вне NSFW-канала")
@@ -46,39 +46,39 @@ async def nekos(interaction: nextcord.Interaction, category: str = nextcord.Slas
 
             
 
-@bot.command(aliases = ['eval', 'aeval', 'evaulate', 'выполнить', 'exec', 'execute'])
-async def __eval(ctx, *, arg):
-    if ctx.author.id not in json_data["creators"]: return await ctx.send("Кыш!")
-    code = await clean_code(arg)
-    standart_args = {
-        "nextcord": nextcord,
-        "discord": nextcord,
-        "commands": commands,
-        "bot": bot,
-        "ctx": ctx,
-        "asyncio": asyncio,
-        "aiohttp": aiohttp,
-        "os": os,
-        'sys': sys,
-        "time": time,
-        "datetime": datetime,
-        "random": random,
-        "requests": requests,
-        "pyautogui": pyautogui,
-        'platform': platform
-    }
-    start = time.time()
-    try:
-        r = await aeval.aeval(f"""{code}""", standart_args, {})#aioconsole.aexec(f"""{code}""", standart_args)
-        ended = time.time() - start
-        print(r)
-        if not code.startswith('#nooutput'):
-            await ctx.send(embed = nextcord.Embed(title = "Успешно!", description = f"Выполнено за: {ended}", color = 0x99ff99).add_field(name = f'Входные данные:', value = f'`{minify_text(code)}`').add_field(name = f'Выходные данные:', value = f'`{minify_text(r)}`', inline=False))
-    except Exception as e:
-        ended = time.time() - start
-        # await ctx.send(embed = discord.Embed(title = f"При выполнении возникла ошибка. Время: {ended}", description = f'Ошибка:\n```py\n{"".join(format_exception(e, e, e.__traceback__))}```', color = 0xff000))
-        if not code.startswith('#nooutput'):
-            await ctx.send(embed = nextcord.Embed(title = f"При выполнении возникла ошибка.\nВремя: {ended}", description = f'Ошибка:\n```py\n{e}```', color = 0xff0000).add_field(name = f'Входные данные:', value = f'`{minify_text(code)}`', inline=False))
-        raise e
+# @bot.command(aliases = ['eval', 'aeval', 'evaulate', 'выполнить', 'exec', 'execute'])
+# async def __eval(ctx, *, arg):
+#     if ctx.author.id not in json_data["creators"]: return await ctx.send("Кыш!")
+#     code = await clean_code(arg)
+#     standart_args = {
+#         "nextcord": nextcord,
+#         "discord": nextcord,
+#         "commands": commands,
+#         "bot": bot,
+#         "ctx": ctx,
+#         "asyncio": asyncio,
+#         "aiohttp": aiohttp,
+#         "os": os,
+#         'sys': sys,
+#         "time": time,
+#         "datetime": datetime,
+#         "random": random,
+#         "requests": requests,
+#         "pyautogui": pyautogui,
+#         'platform': platform
+#     }
+#     start = time.time()
+#     try:
+#         r = await aeval.aeval(f"""{code}""", standart_args, {})#aioconsole.aexec(f"""{code}""", standart_args)
+#         ended = time.time() - start
+#         print(r)
+#         if not code.startswith('#nooutput'):
+#             await ctx.send(embed = nextcord.Embed(title = "Успешно!", description = f"Выполнено за: {ended}", color = 0x99ff99).add_field(name = f'Входные данные:', value = f'`{minify_text(code)}`').add_field(name = f'Выходные данные:', value = f'`{minify_text(r)}`', inline=False))
+#     except Exception as e:
+#         ended = time.time() - start
+#         # await ctx.send(embed = discord.Embed(title = f"При выполнении возникла ошибка. Время: {ended}", description = f'Ошибка:\n```py\n{"".join(format_exception(e, e, e.__traceback__))}```', color = 0xff000))
+#         if not code.startswith('#nooutput'):
+#             await ctx.send(embed = nextcord.Embed(title = f"При выполнении возникла ошибка.\nВремя: {ended}", description = f'Ошибка:\n```py\n{e}```', color = 0xff0000).add_field(name = f'Входные данные:', value = f'`{minify_text(code)}`', inline=False))
+#         raise e
 
 bot.run(json_data["token"])
