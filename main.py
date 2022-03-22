@@ -60,7 +60,7 @@ async def rule34(interaction: nextcord.Interaction, tag: str = nextcord.SlashOpt
     response = requests.get(apibase.format(tag))
     if response.text == '': return await interaction.send('По данному тегу ничего не нашлось :(')
     r = random.choice(response.json()) # TODO: ujson.loads
-    await interaction.send(embed = nextcord.Embed().set_footer(text=f"Теги: {minify_text(r.get('tags', 'нет'))}").set_image(url = r.get('file_url')))
+    await interaction.send(embed = nextcord.Embed(title = 'rule34.xxx', url = r.get('file_url')).set_footer(text=f"Теги: {minify_text(r.get('tags', 'нет'))}").set_image(url = r.get('file_url')))
 
 # Модалки надо бы...
 # @bot.user_command(name='Пожаловаться', description = 'Пожаловаться на пользователя')
