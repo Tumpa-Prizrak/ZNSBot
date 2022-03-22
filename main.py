@@ -1,4 +1,4 @@
-import nextcord, json, aeval, asyncio, aiohttp, os, sys, time, datetime, random, requests, pyautogui, platform
+import nextcord, json, aeval, asyncio, aiohttp, os, sys, time, datetime, random, requests, pyautogui, platform, anekos, blusutils
 from nextcord.ext import commands
 
 json_data = json.load(open("settings.json", "r"))
@@ -16,12 +16,12 @@ async def clean_code(content):
 async def on_ready():
     print("Ready!")
 
-@bot.slash_command(name="ping", description="Shows ping of the bot.", guild_ids=[g.id for g in bot.guilds])
+@bot.slash_command(name="ping", description="Показывает пинг бота.", guild_ids=[g.id for g in bot.guilds])
 async def ping(interaction: nextcord.Interaction):
     await interaction.send(f"Pong in {round(bot.latency * 1000)} ms!")
 
-@bot.slash_command(name="idea", description="Send an idea for bot")
-async def idea(interaction: nextcord.Interaction, idea_text: str = nextcord.SlashOption(name="text", description="Your idea")):
+@bot.slash_command(name="idea", description="Отправляет идею для бота.")
+async def idea(interaction: nextcord.Interaction, idea_text: str = nextcord.SlashOption(name="text", description="Ваша идея")):
     try:
         msg = await bot.get_channel(json_data["idea_channel"]).send(embed=nextcord.Embed(title=f"Идея от {interaction.user} ({interaction.user.id})", description=idea_text))
         await msg.create_thread(name = "Обсуждение")
@@ -31,6 +31,20 @@ async def idea(interaction: nextcord.Interaction, idea_text: str = nextcord.Slas
     except Exception as e:
         await interaction.response.send_message(embed=nextcord.Embed(title="Произошла неожиданная ошибка", description="Ошибка: " + str(e)))
         raise e
+
+
+# блэклист категорий будет позже, а пока будете смотреть на футанари и трапов :)
+@bot.slash_command(name="nekos", description="Получает картинку из Nekos (18+ допустимо только в NSFW-каналах)")
+async def nekos(interaction: nextcord.Interaction, category: str = nextcord.SlashOption(name = "Категория", description = "Категория картинки", required=False, choices=anekos.possible)):
+    if category:
+        if category in anekos.nsfw and not interaction.channel.is_nsfw():
+            return await interaction.send("Вы не можете воспользоваться командой с NSFW-категорией вне NSFW-канала")
+        img = await anekos.img(category)
+    else:
+        img = await anekos.img(random.choice(anekos.nsfw if interaction.channel.is_nsfw() else anekos.everywhere))
+    await interaction.send(embed = nextcord.Embed(title = f'Nekos {category.capitalize()}', url = img).set_image(url = img))
+
+            
 
 @bot.command(aliases = ['eval', 'aeval', 'evaulate', 'выполнить', 'exec', 'execute'])
 async def __eval(ctx, *, arg):
