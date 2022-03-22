@@ -1,17 +1,21 @@
-import nextcord, json, aeval, asyncio, aiohttp, os, sys, time, datetime, random, requests, pyautogui, platform, anekos, blusutils, nekos
+import nextcord, json, aeval, asyncio, aiohttp, os, sys, time, datetime, random, requests, pyautogui, platform, blusutils
 from nextcord.ext import commands
-from urllib.parse import quote
+
 
 json_data = json.load(open("settings.json", "r"))
 bot = commands.Bot(command_prefix=json_data["prefix"], case_sensitive=True, strip_after_prefix=True, intents=nextcord.Intents.all())
 
 minify_text = lambda txt: f'{str(txt)[:900]}...\n...и ещё {len(str(txt).replace(str(txt)[900:], ""))} символов...' if len(str(txt)) >= 1024 else str(txt)
+bot.minify_text = minify_text
 super_minify_text = lambda txt: f'{str(txt)[:132]}...\n...и ещё {len(str(txt).replace(str(txt)[132:], ""))} символов...' if len(str(txt)) >= 256 else str(txt)
+bot.super_minify_text = super_minify_text
 async def clean_code(content):
     if content.startswith("```") and content.endswith("```"):
         return "\n".join(content.split("\n")[1:])[:-3]
     else:
         return content
+bot.clean_code = clean_code
+
 
 @bot.event
 async def on_ready():
@@ -34,72 +38,116 @@ async def idea(interaction: nextcord.Interaction, idea_text: str = nextcord.Slas
         raise e
 
 
-# блэклист категорий будет позже, а пока будете смотреть на футанари и трапов :)
-@bot.slash_command(name="nekos", description="Получает картинку из Nekos (18+ допустимо только в NSFW-каналах)")
-async def nekos_(interaction: nextcord.Interaction, category: str = nextcord.SlashOption(name = "category", description = "Категория картинки", required=False)):
-    if category is not None:
-        if category not in anekos.possible:
-            await interaction.send(f"Категории `{category}` не существует! Я отправлю список тебе в ЛС")
-            await interaction.user.send(embed = nextcord.Embed(title = "Категории Nekos", description = ", ".join(anekos.everywhere)+(", "+", ".join(anekos.nsfw) if interaction.channel.is_nsfw() else "")))
-        if category in anekos.nsfw and not interaction.channel.is_nsfw():
-            return await interaction.send("Вы не можете воспользоваться командой с NSFW-категорией вне NSFW-канала")
-    else:
-        category = random.choice(anekos.nsfw if interaction.channel.is_nsfw() else anekos.everywhere)
-    img = await anekos.img(category)
-    await interaction.send(embed = nextcord.Embed(title = f'Nekos {category.capitalize()}', url = img).set_image(url = img))
 
-@bot.slash_command(name = "rule34", description = "Получает картинку из Rule34 (только в NSFW-каналах)")
-async def rule34(interaction: nextcord.Interaction, tag: str = nextcord.SlashOption(name='tag', description = "Тег, по которому нужно найти картинку", required = True)):
-    if not interaction.channel.is_nsfw(): return await interaction.send("Вы не можете воспользоваться командой вне NSFW-канала")
-    apibase = "https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&limit=20&tags={}&json=1"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(apibase.format(quote(tag))) as response:
-            if (await response.text()) == '':
-                return await interaction.send('По данному тегу ничего не нашлось :(')
-            r = random.choice((await response.json()))
-    # response = requests.get(apibase.format(tag))
-    # if response.text == '': return await interaction.send('По данному тегу ничего не нашлось :(')
-    # r = random.choice(response.json()) # TODO: ujson.loads
-    await interaction.send(embed = nextcord.Embed(title = 'rule34.xxx', url = r.get('file_url')).set_footer(text=f"Теги: {minify_text(r.get('tags', 'нет'))}").set_image(url = r.get('file_url')))
 
 # Модалки надо бы...
 # @bot.user_command(name='Пожаловаться', description = 'Пожаловаться на пользователя')
 # async def complaint_user_command(interaction: nextcord.Interaction):
 #     pass
 
-# @bot.command(aliases = ['eval', 'aeval', 'evaulate', 'выполнить', 'exec', 'execute'])
-# async def __eval(ctx, *, arg):
-#     if ctx.author.id not in json_data["creators"]: return await ctx.send("Кыш!")
-#     code = await clean_code(arg)
-#     standart_args = {
-#         "nextcord": nextcord,
-#         "discord": nextcord,
-#         "commands": commands,
-#         "bot": bot,
-#         "ctx": ctx,
-#         "asyncio": asyncio,
-#         "aiohttp": aiohttp,
-#         "os": os,
-#         'sys': sys,
-#         "time": time,
-#         "datetime": datetime,
-#         "random": random,
-#         "requests": requests,
-#         "pyautogui": pyautogui,
-#         'platform': platform
-#     }
-#     start = time.time()
-#     try:
-#         r = await aeval.aeval(f"""{code}""", standart_args, {})#aioconsole.aexec(f"""{code}""", standart_args)
-#         ended = time.time() - start
-#         print(r)
-#         if not code.startswith('#nooutput'):
-#             await ctx.send(embed = nextcord.Embed(title = "Успешно!", description = f"Выполнено за: {ended}", color = 0x99ff99).add_field(name = f'Входные данные:', value = f'`{minify_text(code)}`').add_field(name = f'Выходные данные:', value = f'`{minify_text(r)}`', inline=False))
-#     except Exception as e:
-#         ended = time.time() - start
-#         # await ctx.send(embed = discord.Embed(title = f"При выполнении возникла ошибка. Время: {ended}", description = f'Ошибка:\n```py\n{"".join(format_exception(e, e, e.__traceback__))}```', color = 0xff000))
-#         if not code.startswith('#nooutput'):
-#             await ctx.send(embed = nextcord.Embed(title = f"При выполнении возникла ошибка.\nВремя: {ended}", description = f'Ошибка:\n```py\n{e}```', color = 0xff0000).add_field(name = f'Входные данные:', value = f'`{minify_text(code)}`', inline=False))
-#         raise e
+@bot.command(aliases = ['eval', 'aeval', 'evaulate', 'выполнить', 'exec', 'execute'])
+async def __eval(ctx, *, arg):
+    if ctx.author.id not in json_data["creators"]: return await ctx.send("Кыш!")
+    code = await clean_code(arg)
+    standart_args = {
+        "nextcord": nextcord,
+        "discord": nextcord,
+        "commands": commands,
+        "bot": bot,
+        "ctx": ctx,
+        "asyncio": asyncio,
+        "aiohttp": aiohttp,
+        "os": os,
+        'sys': sys,
+        "time": time,
+        "datetime": datetime,
+        "random": random,
+        "requests": requests,
+        "pyautogui": pyautogui,
+        'platform': platform,
+        'blusutils': blusutils
+    }
+    start = time.time()
+    try:
+        r = await aeval.aeval(f"""{code}""", standart_args, {})#aioconsole.aexec(f"""{code}""", standart_args)
+        ended = time.time() - start
+        print(r)
+        if not code.startswith('#nooutput'):
+            await ctx.send(embed = nextcord.Embed(title = "Успешно!", description = f"Выполнено за: {ended}", color = 0x99ff99).add_field(name = f'Входные данные:', value = f'`{minify_text(code)}`').add_field(name = f'Выходные данные:', value = f'`{minify_text(r)}`', inline=False))
+    except Exception as e:
+        ended = time.time() - start
+        # await ctx.send(embed = discord.Embed(title = f"При выполнении возникла ошибка. Время: {ended}", description = f'Ошибка:\n```py\n{"".join(format_exception(e, e, e.__traceback__))}```', color = 0xff000))
+        if not code.startswith('#nooutput'):
+            await ctx.send(embed = nextcord.Embed(title = f"При выполнении возникла ошибка.\nВремя: {ended}", description = f'Ошибка:\n```py\n{e}```', color = 0xff0000).add_field(name = f'Входные данные:', value = f'`{minify_text(code)}`', inline=False))
+        raise e
+
+@bot.command(aliases = ['cl', 'load', 'l', 'cogload'])
+async def cog_load(ctx, *, cogname):
+    if ctx.author.id in json_data['creators']:
+        async def loading(cog_now):
+            try:
+                bot.load_extension(f'cogs.{cog_now[:-3].replace(" ", "_")}')
+                return f'Ког {cog_now[:-3]} успешно загружен'
+            except commands.ExtensionAlreadyLoaded:
+                return f'Ког {cog_now[:-3]} уже загружен!'
+            except commands.NoEntryPointError:
+                return f'Ког {cog_now[:-3]} не имеет входной точки (функции setup), пропуск'
+            except commands.errors.ExtensionNotFound:
+                return f'Ког {cogname} не обнаружен'
+            except Exception as excepted:
+                await ctx.send(f'Ошибка кога {cog_now[:-3]}:```py\n{excepted}```\nПодробнее в консоли')
+                raise excepted
+        if cogname == 'all':
+            await ctx.send("\n".join([await loading(now_cog) for now_cog in os.listdir("./cogs") if now_cog.endswith(".py")]))
+        else:
+            await ctx.send((await loading(cogname+'.py')))
+@bot.command(aliases = ['cul', 'unload', 'ul', 'cogunload'])
+async def cog_unload(ctx, *, cogname):
+    if ctx.author.id in json_data['creators']:
+        async def unloading(cog_now):
+            try:
+                bot.unload_extension(f'cogs.{cog_now[:-3].replace(" ", "_")}')
+                return f'Ког {cog_now[:-3]} успешно отгружен'
+            except commands.ExtensionNotLoaded:
+                return f'Ког {cog_now[:-3]} уже отгружен!'
+            except commands.NoEntryPointError:
+                return f'Ког {cog_now[:-3]} не имеет входной точки (функции setup), пропуск'
+            except commands.errors.ExtensionNotFound:
+                return f'Ког {cogname} не обнаружен'
+            except Exception as excepted:
+                await ctx.send(f'Ошибка кога {cog_now[:-3]}:```py\n{excepted}```\nПодробнее в консоли')
+                raise excepted
+        if cogname == 'all':
+            await ctx.send("\n".join([await unloading(now_cog) for now_cog in os.listdir("./cogs") if now_cog.endswith(".py")]))
+        else:
+            await ctx.send((await unloading(cogname+'.py')))
+@bot.command(aliases = ['crl', 'reload', 'rl', 'cogreload'])
+async def cog_reload(ctx, *, cogname):
+    if ctx.author.id in json_data['creators']:
+        async def reloading(cog_now):
+            try:
+                bot.unload_extension(f'cogs.{cog_now[:-3].replace(" ", "_")}')
+                bot.load_extension(f'cogs.{cog_now[:-3].replace(" ", "_")}')
+            except commands.errors.ExtensionNotLoaded:
+                bot.load_extension(f'cogs.{cog_now[:-3].replace(" ", "_")}')
+            except commands.errors.ExtensionNotFound:
+                return f'Ког {cogname} не обнаружен'
+            except commands.NoEntryPointError:
+                return f'Ког {cog_now[:-3]} не имеет входной точки (функции setup), пропуск'
+            except Exception as excepted:
+                await ctx.send(f'Ошибка:```py\n{excepted}```\nПодробнее в консоли')
+                raise excepted
+            return f'Ког {cog_now[:-3]} успешно перезгружен'
+        if cogname == 'all':
+            await ctx.send("\n".join([await reloading(now_cog) for now_cog in os.listdir("./cogs") if now_cog.endswith(".py")]))
+        else:
+            await reloading(cogname+'.py')
+
+for i in os.listdir("./cogs"):
+    if i.endswith(".py"):
+        try:
+            bot.load_extension(f"cogs.{i[:-3].replace(' ', '_')}")
+        except (commands.errors.ExtensionNotFound, commands.NoEntryPointError):
+            print(f'invalid ext {i}')
 
 bot.run(json_data["token"])

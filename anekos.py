@@ -2,19 +2,20 @@
 """
 import aiohttp, asyncio
 import ujson
+import blusutils
 # from blusutils.collections import deep_merge
 
-possible = [
-    'feet', 'yuri', 'trap', 'futanari', 'hololewd', 'lewdkemo',
-    'solog', 'feetg', 'cum', 'erokemo', 'les', 'wallpaper', 'lewdk',
-    'ngif', 'tickle', 'lewd', 'feed', 'gecg', 'eroyuri', 'eron',
-    'cum_jpg', 'bj', 'nsfw_neko_gif', 'solo', 'kemonomimi', 'nsfw_avatar',
-    'gasm', 'poke', 'anal', 'slap', 'hentai', 'avatar', 'erofeet', 'holo',
-    'keta', 'blowjob', 'pussy', 'tits', 'holoero', 'lizard', 'pussy_jpg',
-    'pwankg', 'classic', 'kuni', 'waifu', 'pat', '8ball', 'kiss', 'femdom',
-    'neko', 'spank', 'cuddle', 'erok', 'fox_girl', 'boobs', 'random_hentai_gif',
-    'smallboobs', 'hug', 'ero', 'smug', 'goose', 'baka', 'woof'
-]
+# possible = [
+#     'feet', 'yuri', 'trap', 'futanari', 'hololewd', 'lewdkemo',
+#     'solog', 'feetg', 'cum', 'erokemo', 'les', 'wallpaper', 'lewdk',
+#     'ngif', 'tickle', 'lewd', 'feed', 'gecg', 'eroyuri', 'eron',
+#     'cum_jpg', 'bj', 'nsfw_neko_gif', 'solo', 'kemonomimi', 'nsfw_avatar',
+#     'gasm', 'poke', 'anal', 'slap', 'hentai', 'avatar', 'erofeet', 'holo',
+#     'keta', 'blowjob', 'pussy', 'tits', 'holoero', 'lizard', 'pussy_jpg',
+#     'pwankg', 'classic', 'kuni', 'waifu', 'pat', '8ball', 'kiss', 'femdom',
+#     'neko', 'spank', 'cuddle', 'erok', 'fox_girl', 'boobs', 'random_hentai_gif',
+#     'smallboobs', 'hug', 'ero', 'smug', 'goose', 'baka', 'woof'
+# ]
 
 everywhere = ['tickle', 'waifu', 'baka', 'ngif', 'cuddle', 'avatar', 'holo', 'kiss', 'fox_girl', 'poke', 'goose', 'pat', 'slap', 'woof', 'wallpaper', 'hug', 'smug']
 
@@ -28,6 +29,8 @@ nsfw = [
     'neko', 'spank', 'erok', 'boobs', 'random_hentai_gif',
     'smallboobs', 'ero'
 ]
+
+possible = blusutils.collections.merge(everywhere, nsfw)
 
 class NekoException(Exception):
     """Base exception class for anekos.py """
