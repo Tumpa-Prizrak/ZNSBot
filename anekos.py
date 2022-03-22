@@ -61,8 +61,9 @@ class NekosAsyncAPI:
                 return resp
 
     async def get_as_json(self, url, **kwargs):
-        r = await self.get(url, **kwargs)
-        return await r.json() # похуй на южсон, когда пофиксим - верну
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.base_url+url, **kwargs) as resp:
+                return await resp.json() # похуй на южсон, когда пофиксим - верну
 
 
 
