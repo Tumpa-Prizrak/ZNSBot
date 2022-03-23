@@ -1,3 +1,4 @@
+import re
 import nextcord, json, aeval, asyncio, aiohttp, os, sys, time, datetime, random, requests, pyautogui, platform, blusutils
 from nextcord.ext import commands
 
@@ -20,6 +21,18 @@ bot.clean_code = clean_code
 @bot.event
 async def on_ready():
     print("Ready!")
+
+@bot.listen("on_message") # listen как event, но их можно делать сколько угодно
+async def reps(message: nextcord.Message):
+    if message.content.lower().startswith(("+rep", "-rep")):
+        marr = message.content.split(" ")
+        action = marr[0][:1] # когда будет бд, будем менять репу
+        whoreps = await message.guild.get_member(int(marr[1][2:-1])) if re.match(r"<@\d+>", marr[1])\
+            else (await message.channel.fetch_message(message.reference.message_id)).author if message.reference\
+                else await message.reply(f'Я не могу понять, кому нужно {"добавить" if action == "+" else "убрать"} репутацию!')\
+                    and blusutils.anywhere_raise(commands.errors.BadArgument(f"Invalid argument for {marr[0]}: {marr[1]}")) # вот он и пригодился). люблю тернарники
+        await message.reply(f'{marr[0].upper()} {whoreps.mention}: {" ".join(marr[2:])}')
+
 
 @bot.slash_command(name="ping", description="Показывает пинг бота.", guild_ids=[g.id for g in bot.guilds])
 async def ping(interaction: nextcord.Interaction):

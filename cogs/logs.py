@@ -1,4 +1,4 @@
-import datetime
+import time
 import nextcord
 import asyncio
 from nextcord.ext import commands, tasks
@@ -62,17 +62,12 @@ class Logs(commands.Cog):
         async for action in message.guild.audit_logs(action = nextcord.AuditLogAction.message_delete):
             if action.target.id == message.author.id:
                 del_by_who = action.user
-            print(action.user)
-            print(action.target)
-            print(action.extra)
             break
         emb = nextcord.Embed(
                 title = "Сообщение удалено",
                 color = 0xff0303
             )
         cont = self.bot.minify_text(message.content)
-        print(cont)
-        print(len(cont))
         emb.add_field(name = f'Содержимое удалённого сообщения:', value = f'`{cont}`', inline = False)
         emb.add_field(name = "Вложения:", value = f'`{self.bot.minify_text(attach)}`', inline = False)
         emb.add_field(name = "Автор сообщения:", value = f"{message.author.mention}", inline = False)
@@ -152,7 +147,7 @@ class Logs(commands.Cog):
         await self.logchannel.send(embed = emb)
 
     @commands.Cog.listener()
-    async def on_guild_channel_update(self, before, after):
+    async def on_guild_channel_update(self, before: nextcord.TextChannel, after: nextcord.TextChannel):
         perms_before = await self.perms_to_normal(before.overwrites)
         perms_after = await self.perms_to_normal(after.overwrites)
         emb = nextcord.Embed(
@@ -160,7 +155,7 @@ class Logs(commands.Cog):
                 color = 0xffff00
             )
         emb.add_field(name = f'Название до: #{before.name}', value = f'Название после: #{after.name}', inline = False)
-        if before.category.id != after.category.id:
+        if before.category != after.category:
             emb.add_field(name = f"Категория до: #{before.category.name if before.category else 'нет'}", value = f"Категория после: {after.category.mention if after.category else 'нет'}", inline = False)
         if before.type != after.type:
             emb.add_field(name = f"Тип до: {before.type}", value = f"Тип после: {after.type}", inline = False)
@@ -199,7 +194,7 @@ class Logs(commands.Cog):
         await self.logchannel.send(embed = emb)
 
     @commands.Cog.listener()
-    async def on_member_join(self, member):
+    async def on_member_join(self, member: nextcord.Member):
         emb = nextcord.Embed(
                 title = "К серверу присоединился участник",
                 color = 0x33ff33
@@ -208,9 +203,8 @@ class Logs(commands.Cog):
         alert = "** **"
         emb.add_field(name = f"Имя: {member}", value = f"Отображаемое имя: {member.display_name}", inline = False)
         emb.add_field(name = f'Бот: {"да" if member.bot else "нет"}', value = "** **", inline = False)
-        time_after_create = datetime.datetime.now() - member.created_at
-        print(round(time_after_create.total_seconds()))
-        if round(time_after_create.total_seconds()) < 60*60*12:
+        time_after_create = time.time() - member.created_at.timestamp()
+        if round(time_after_create) < 60*60*12:
             alert = f':warning: ВНИМАНИЕ: аккаунт создан менее 12ч назад! ({str(time_after_create)[:-7]} назад)'
         emb.add_field(name = f'Дата создания аккаунта: {member.created_at}', value = f'{alert}', inline = False)
         if member.activity:
